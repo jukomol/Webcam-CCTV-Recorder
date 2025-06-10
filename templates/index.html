@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCTV Web App</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    header {
+      background-color: #1e1e1e;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #00ffc8;
+    }
+
+    .main-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 30px;
+      gap: 30px;
+    }
+
+    .camera-container {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1 1 400px;
+      max-width: 600px;
+      box-shadow: 0 0 15px rgba(0, 255, 200, 0.2);
+    }
+
+    .recordings-container {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1 1 400px;
+      max-width: 400px;
+      box-shadow: 0 0 15px rgba(0, 255, 200, 0.2);
+    }
+
+    .camera-container img {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .recordings-container h2 {
+      font-size: 1.5rem;
+      color: #00ffc8;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+
+    .recordings-container ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    .recordings-container li {
+      margin: 10px 0;
+    }
+
+    .recordings-container a {
+      color: #7df9ff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease-in-out;
+    }
+
+    .recordings-container a:hover {
+      color: #00ffc8;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    /* Scrollbar styling */
+    .recordings-container ul::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .recordings-container ul::-webkit-scrollbar-track {
+      background: #222;
+    }
+
+    .recordings-container ul::-webkit-scrollbar-thumb {
+      background-color: #00ffc8;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>CCTV DASHBOARD</h1>
+  </header>
+
+  <div class="main-container">
+    <div class="camera-container">
+      <img src="{{ url_for('video_feed') }}" alt="Live Camera Feed">
+    </div>
+    <div class="recordings-container">
+{% if message %}
+<p style="color: #0ff; font-weight: bold;">{{ message }}</p>
+{% endif %}
+
+
+  <div style="margin-top: 20px;">
+    <form action="{{ url_for('start_recording') }}" method="get" style="display:inline;">
+      <button style="padding:10px 20px; background:#4caf50; color:white; border:none; border-radius:5px; cursor:pointer;">
+        ▶️ Start Recording
+      </button>
+    </form>
+
+    <form action="{{ url_for('stop_recording') }}" method="get" style="display:inline;">
+      <button style="padding:10px 20px; background:#f44336; color:white; border:none; border-radius:5px; cursor:pointer;">
+        ⛔ Stop Recording
+      </button>
+    </form>
+  </div>
+
+      <h2>🎞 Saved Recordings</h2>
+      <ul>
+        {% for file in files %}
+        <li><a href="{{ url_for('download_file', filename=file) }}">{{ file }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+
+
+  <footer>
+    &copy; {{ now.strftime('%Y') if now else '2025' }} CCTV Web App — Built by JUKOMOL
+  </footer>
+
+</body>
+</html>
