@@ -21,12 +21,12 @@ def capture_and_record():
     global frame_buffer, recording_active
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = None
-    start_time = datetime.now()
-    end_time = start_time + timedelta(hours=1)
+    end_time = None  # Initially None to detect fresh start
+    is_recording = False  # To track state transition
 
     while True:
         ret, frame = cap.read()
-        if not ret:
+        if not ret or frame is None:
             print("⚠️ Failed to capture frame.")
             time.sleep(0.1)
             continue
@@ -35,28 +35,43 @@ def capture_and_record():
             frame_buffer = frame.copy()
 
         if recording_active:
-            if out is None:
+            if not is_recording:
+                # Transition from stopped -> started
+                start_time = datetime.now()
                 timestamp = start_time.strftime("%Y-%m-%d_%H-%M-%S")
                 filepath = os.path.join(RECORDINGS_DIR, f"{timestamp}.mp4")
                 height, width = frame.shape[:2]
                 out = cv2.VideoWriter(filepath, fourcc, 30.0, (width, height))
-                print(f"🎥 Recording to: {filepath}")
+                if not out.isOpened():
+                    print(f"❌ Failed to open VideoWriter for {filepath}")
+                    out = None
+                    continue
+                end_time = start_time + timedelta(hours=1)
+                is_recording = True
+                print(f"🎥 Started recording: {filepath}")
 
             if datetime.now() >= end_time:
                 out.release()
+                is_recording = False
                 out = None
-                start_time = datetime.now()
-                end_time = start_time + timedelta(hours=1)
-                print("⏳ Started next hourly file.")
+                print("⏳ Hour completed. Next file will start on new activation.")
 
-            out.write(frame)
-
-        else:
             if out:
+                try:
+                    out.write(frame)
+                except Exception as e:
+                    print(f"❌ Error writing frame: {e}")
+                    out.release()
+                    out = None
+                    is_recording = False
+        else:
+            if is_recording:
                 out.release()
                 out = None
+                is_recording = False
                 print("🛑 Recording stopped.")
             time.sleep(0.1)
+
 
 def gen_frames():
     while True:
