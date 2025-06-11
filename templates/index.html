@@ -110,6 +110,25 @@
       background-color: #00ffc8;
       border-radius: 10px;
     }
+
+/* Apply scrolling only to the recordings list */
+.recordings-scroll ul {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Scrollbar styling */
+.recordings-scroll ul::-webkit-scrollbar {
+  width: 8px;
+}
+.recordings-scroll ul::-webkit-scrollbar-track {
+  background: #222;
+}
+.recordings-scroll ul::-webkit-scrollbar-thumb {
+  background-color: #00ffc8;
+  border-radius: 10px;
+}
   </style>
 </head>
 <body>
@@ -141,13 +160,14 @@
       </button>
     </form>
   </div>
-
+    <div class="recordings-scroll">  
       <h2>🎞 Saved Recordings</h2>
       <ul>
         {% for file in files %}
         <li><a href="{{ url_for('download_file', filename=file) }}">{{ file }}</a></li>
         {% endfor %}
       </ul>
+      </div>
     </div>
   </div>
 
