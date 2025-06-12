@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+electron/node_modules/electron/dist/electron.exe filter=lfs diff=lfs merge=lfs -text
+electron/dist/CCTVApp-win32-x64/CCTVApp.exe filter=lfs diff=lfs merge=lfs -text
